@@ -1,4 +1,25 @@
 module Fission
+
+  class << self
+    def to_hash(hash)
+      new_hash = Mash.new
+      hash.each do |k,v|
+        new_hash[k] = v.is_a?(Hash) ? to_hash(v) : v
+      end
+      new_hash
+    end
+  end
+
+  module Attribute
+    def export_hash
+      new_hash = Mash.new
+      self.each do |k,v|
+        new_hash[k] = v.respond_to?(:export_hash) ? v.export_hash : v
+      end
+      new_hash
+    end
+  end
+
   module Reactor
 
     module Station
@@ -21,10 +42,12 @@ module Fission
           raise TypeError.new('`reactor` expects block. No block provided!')
         else
           execute_resources_if_enabled!(:before, :dependencies)
-          new_resource.args[:dependencies][:build].each do |pkg_name, pkg_version|
-            package pkg_name do
-              if(pkg_version)
-                version pkg_version
+          if(new_resource.args[:dependencies][:build])
+            new_resource.args[:dependencies][:build].each do |pkg_name, pkg_version|
+              package pkg_name do
+                if(pkg_version)
+                  version pkg_version
+                end
               end
             end
           end
@@ -52,22 +75,24 @@ module Fission
       end
 
       def execute_resources_if_enabled!(timing, location)
-        unless(new_resource.send("disable_#{timing}").include?(location))
-          new_resource.args[:build][:commands][timing][location].each do |com|
-            case com
-            when String
-              execute "#{timing}_#{location}(#{com})" do
-                command com
-                cwd '/tmp'
-              end
-            when Hash
-              execute "#{timing}_#{location}(#{com})" do
-                com.each do |k,v|
-                  self.send(k,v)
+        if(new_resource.args[:build][:commands] && new_resource.args[:build][:commands][timing] && new_resource.args[:build][:commands][timing][location])
+          unless(new_resource.send("disable_#{timing}").include?(location))
+            new_resource.args[:build][:commands][timing][location].each do |com|
+              case com
+              when String
+                execute "#{timing}_#{location}(#{com})" do
+                  command com
+                  cwd '/tmp'
                 end
+              when Hash
+                execute "#{timing}_#{location}(#{com})" do
+                  com.each do |k,v|
+                    self.send(k,v)
+                  end
+                end
+              else
+                raise TypeError.new("Expecting String or Hash type. Got `#{com.class}` type instead.")
               end
-            else
-              raise TypeError.new("Expecting String or Hash type. Got `#{com.class}` type instead.")
             end
           end
         end

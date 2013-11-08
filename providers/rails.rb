@@ -1,4 +1,4 @@
-include Fission::Reactor::Core
+include ::Fission::Reactor::Core
 
 action :build do
   args = new_resource.args

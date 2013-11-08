@@ -1,6 +1,6 @@
-include Fission::Reactor::Station
+include ::Fission::Reactor::Station
 
-action :build
+actions :build
 default_action :build
 
 attribute :args, :kind_of => Hash, :required => true
