@@ -3,7 +3,7 @@
 action :run do
 node.set[:fpm_tng][:exec] = 'fpm'
   builder = lambda do |config|
-    resource_type = "fission_#{config[:build][:template]}".to_sym
+    resource_type = "packager_#{config[:build][:template]}".to_sym
     self.send(resource_type, "#{config[:build][:name]}") do
       args config
     end
@@ -18,6 +18,6 @@ node.set[:fpm_tng][:exec] = 'fpm'
     builder.call(opts)
   end
 
-  dep_builder.call(::Fission.to_hash(new_resource.build))
+  dep_builder.call(::Packager.to_hash(new_resource.build))
 
 end

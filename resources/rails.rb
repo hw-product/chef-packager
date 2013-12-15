@@ -1,4 +1,4 @@
-include ::Fission::Reactor::Station
+include ::Packager::Reactor::Station
 
 actions :build
 default_action :build

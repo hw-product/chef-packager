@@ -1,4 +1,4 @@
-module Fission
+module Packager
 
   class << self
     def to_hash(hash)

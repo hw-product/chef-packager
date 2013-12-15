@@ -1,4 +1,4 @@
-name 'fission'
+name 'packager'
 version '0.1.0'
 
 depends 'pkg-build'
