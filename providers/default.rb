@@ -1,7 +1,7 @@
 
 
 action :run do
-node.set[:fpm_tng][:exec] = 'fpm'
+  node.set[:fpm_tng][:exec] = 'fpm'
   builder = lambda do |config|
     resource_type = "packager_#{config[:build][:template]}".to_sym
     self.send(resource_type, "#{config[:build][:name]}") do
