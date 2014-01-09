@@ -11,6 +11,7 @@ action :build do
       args[:source].each do |k,v|
         self.send(k,v)
       end
+      environment node[:packager][:environment].merge(args[:build][:environment] || {})
       commands args[:build][:commands][:build]
       creates '/tmp/always/build'
     end
