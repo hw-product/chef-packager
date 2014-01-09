@@ -5,7 +5,7 @@ action :build do
   args[:source] ||= {}
   default_erlang_build!(args)
 
-  node.set[:erlang][:esl_packages] = true
+  node.set[:erlang][:install_method] = 'esl'
   run_context.include_recipe 'erlang'
 
   reactor do
@@ -34,13 +34,14 @@ def default_erlang_build!(args)
     args[key] ||= Mash.new
   end
   install_prefix = args[:build][:install_prefix] || ::File.join('/opt', args[:build][:name])
+  args[:build][:commands] ||= Mash.new
   args[:build][:commands][:build] = [
     './rebar delete-deps',
     './rebar clean',
     './rebar get-deps',
     './rebar compile',
     'cd rel && ../rebar generate',
-    "mkdir $PKG_DIR/opt/#{install_prefix}",
-    "mv rel/* $PKG_DIR#{install_prefix}/"
+    "mkdir -p $PKG_DIR/#{install_prefix}",
+    "mv rel/* $PKG_DIR/#{install_prefix}/"
   ]
 end
