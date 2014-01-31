@@ -72,8 +72,8 @@ action :build do
         args[:source].each do |k,v|
           self.send(k,v)
         end
-        commands args[:build][:commands][:build]
-        environment node[:packager][:environment]
+        commands args[:build][:commands][:build].dup
+        environment node[:packager][:environment].dup
         creates '/tmp/always/be/building'
       end
 
