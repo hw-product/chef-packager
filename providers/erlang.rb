@@ -107,7 +107,7 @@ def set_reload!(args)
     [gen_prefix, "rebar generate-appups previous_release=$PACKAGER_NAME-#{args[:build][:reloader][:from]}"].compact.join(' && '),
     [gen_prefix, "rebar generate-upgrade previous_release=$PACKAGER_NAME-#{args[:build][:reloader][:from]}"].compact.join(' && '),
     "mkdir -p $PKG_DIR/#{install_prefix}",
-    "dpkg-deb -x $PACKAGER_HISTORY_DIR/$PACKAGER_NAME-#{args[:build][:reloader][:from]}.$PACKAGER_TYPE $PACKAGER_PKG_DIR",
+    "dpkg-deb -x $PACKAGER_HISTORY_DIR/$PACKAGER_NAME-#{args[:build][:reloader][:from]}.$PACKAGER_TYPE $PKG_DIR",
     "tar -C $PKG_DIR/#{install_prefix} -zxf rel/${PACKAGER_NAME}_${PACKAGER_VERSION}.tar.gz"
   ]
 end
