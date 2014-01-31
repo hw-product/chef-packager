@@ -64,8 +64,10 @@ action :build do
   builds.each do |build_type|
     set_reload!(args) if build_type == :reload
 
+    resource_name = [args[:build][:name], build_type].compact.map(&:to_s).join('_')
+
     reactor do
-      builder args[:build][:name] do
+      builder resource_name do
         if(args[:target_store])
           init_command "cp -R #{::File.join(args[:target_store], '*')} ."
         end
@@ -77,11 +79,12 @@ action :build do
         creates '/tmp/always/be/building'
       end
 
-      fpm_tng_package args[:build][:name] do
+      fpm_tng_package resource_name do
+        package_name args[:build][:name]
         output_type args[:target][:package]
         depends args[:dependencies][:runtime] unless [args[:dependencies][:runtime]].flatten.compact.empty?
         version args[:build][:version]
-        chdir ::File.join(node[:builder][:packaging_dir], args[:build][:name])
+        chdir ::File.join(node[:builder][:packaging_dir], resource_name)
       end
     end
 
