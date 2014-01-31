@@ -62,9 +62,13 @@ action :build do
   end
 
   builds.each do |build_type|
-    set_reload!(args) if build_type == :reload
 
-    resource_name = [args[:build][:name], build_type].compact.map(&:to_s).join('_')
+    if(build_type == :reload)
+      set_reload!(args)
+      resource_name = "#{args[:build][:name]}_reloader"
+    else
+      resource_name = args[:build][:name]
+    end
 
     reactor do
       builder resource_name do
